@@ -1,0 +1,6 @@
+{
+  "UseSudo": "N",
+  "CreateStoreOnAddIfMissing": "Y",
+  "UseSeparateUploadFilePath": "N",
+  "SeparateUploadFilePath": "/path/to/upload/folder/"
+}
