@@ -83,8 +83,8 @@ namespace PEMStoreSSH
             if (!string.IsNullOrEmpty(pfxPassword))
             {
                 PrivateKeyConverter converter = CSS.PKI.PrivateKeys.PrivateKeyConverterFactory.FromPKCS12(certBytes, pfxPassword);
-                byte[] privateKeyBytes = converter.ToPkcs8Blob(string.IsNullOrEmpty(storePassword) ? pfxPassword : storePassword);
-                string privateKeyPem = PemUtilities.DERToPEM(privateKeyBytes, PemUtilities.PemObjectType.EncryptedPrivateKey);
+                byte[] privateKeyBytes = string.IsNullOrEmpty(storePassword) ? converter.ToPkcs8BlobUnencrypted() : converter.ToPkcs8Blob(storePassword);
+                string privateKeyPem = PemUtilities.DERToPEM(privateKeyBytes, string.IsNullOrEmpty(storePassword) ? PemUtilities.PemObjectType.PrivateKey : PemUtilities.PemObjectType.EncryptedPrivateKey);
 
                 if (hasSeparatePrivateKey)
                 {
