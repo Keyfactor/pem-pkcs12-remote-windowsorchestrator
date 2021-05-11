@@ -1,3 +1,6 @@
+v1.0.10:
+- Modify private key encryption handling so that if a store password is used, the private key of a cert will be encrypted with that password during add operations.  If no store password is set, the private key will be saved without encryption.
+
 v1.0.9:
 - Allow for assignment of Store Password which, if present, will be used to encrypt private key in certificate add jobs.
 
