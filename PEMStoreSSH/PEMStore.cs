@@ -12,6 +12,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 using PEMStoreSSH.RemoteHandlers;
+using Keyfactor.Extensions.Pam.Utilities;
 
 namespace PEMStoreSSH
 {
@@ -49,7 +50,7 @@ namespace PEMStoreSSH
             Server = server;
             StorePath = storeFileAndPath;
             ServerId = serverId;
-            ServerPassword = serverPassword;
+            ServerPassword = PamUtility.ResolvePassword(serverPassword);
             StorePassword = storePassword;
             PrivateKeyPath = privateKeyPath;
             CertificateHandler = GetCertificateHandler(formatType);
@@ -65,7 +66,7 @@ namespace PEMStoreSSH
         {
             Server = server;
             ServerId = serverId;
-            ServerPassword = serverPassword;
+            ServerPassword = PamUtility.ResolvePassword(serverPassword);
             ServerType = serverType;
             CertificateHandler = GetCertificateHandler(formatType);
 
