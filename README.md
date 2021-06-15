@@ -1,10 +1,14 @@
-## Overview
+# PEM_PKCS12
+## orchestrator
 
-The PEM_PKCS12 AnyAgent allows a user to discover, inventory, and manage (both add and remove) PEM and PKCS12 based certificate stores on both Windows and Linux servers. The communication between the orchestrator agent and the server being orchestrated is handled using SSH for Linux orchestrated servers and WinRM for Windows orchestrated servers.
+The PEM_PKCS12 Orchestrator allows a user to discover, inventory, and manage (both add and remove) PEM and PKCS12 based certificate stores on both Windows and Linux servers. The communication between the orchestrator agent and the server being orchestrated is handled using SSH for Linux orchestrated servers and WinRM for Windows orchestrated servers.
+
+<!-- add integration specific information below -->
+*** 
 
 ## Use Cases
 
-The PEM_PKCS12 Windows AnyAgent implements the following capabilities:
+The PEM_PKCS12 Windows Orchestrator implements the following capabilities:
 
 1. Create - Create either a PEM or PKCS12 certificate store.
 2. Discovery - Discover all PEM or PKCS12 certificate stores in a set of paths based on optional list of file extensions and partial name matching.
@@ -12,7 +16,7 @@ The PEM_PKCS12 Windows AnyAgent implements the following capabilities:
 4. Management (Add) - Add a certificate to a defined certificate store.
 5. Management (Remove) - Remove a certificate from a defined certificate store.
 
-The PEM_PKCS12 Windows AnyAgent supports the following types of certificate stores:
+The PEM_PKCS12 Windows Orchestrator supports the following types of certificate stores:
 
 1. PEM trust stores (multiple public (most likely CA) certificates with no private keys).
 2. PEM certificate stores containing one public certificate and one private key.
@@ -21,15 +25,24 @@ The PEM_PKCS12 Windows AnyAgent supports the following types of certificate stor
 
 ## Versioning
 
-The version number of a the PEM_PKCS12 Windows AnyAgent can be verified by right clicking on the PEMStoreSSH.dll file in the Plugins installation folder, selecting Properties, and then clicking on the Details tab.
+The version number of a the PEM_PKCS12 Windows Orchestrator can be verified by right clicking on the PEMStoreSSH.dll file in the Plugins installation folder, selecting Properties, and then clicking on the Details tab.
 
 ## Keyfactor Version Supported
 
-The PEM_PKCS12 Windows AnyAgent has been tested against Keyfactor version 8.1.1 but should work against earlier or later versions.
+The PEM_PKCS12 Windows Orchestrator has been tested against Keyfactor version 8.1.1 but should work against earlier or later versions.
 
-## PEM_PKCS12 AnyAgent Configuration
+## Security Considerations
 
-**1. Create the New Certificate Store Type for the New PEM_PKCS12 AnyAgent**
+**For Linux orchestrated servers:**
+1. The PEM_PKCS12 AnyAgent makes use of Linux commands such as "cp" and "find".  If the credentials you will be connecting with will need elevated access to run these commands, you must set the id up as a sudoer with no password necessary and set the config.json "UseSudo" value to "Y" (See Section 4 regarding the config.json file).
+2. The PEM_PKCS12 AnyAgent makes use of SFTP to transfer files to and from the orchestrated server.  SFTP will not mske use of sudo, so all folders containing certificate stores will need to allow SFTP file transfer.  If this is not possible, set the values in the config.json apprpriately to use an alternative upload/download folder that does have SFTP file transfer (See Section 4 regarding the config.json file).
+
+**For Windows orchestrated servers:**
+1. Make sure that WinRM is set up on the orchestrated server and that the WinRM port is part of the certificate store path when setting up your certificate stores (See Section 3a below). 
+
+## PEM_PKCS12 Orchestrator Configuration
+
+**1. Create the New Certificate Store Type for the New PEM_PKCS12 Orchestrator**
 
 In Keyfactor Command create a new Certificate Store Type similar to the one below:
 
@@ -43,7 +56,7 @@ In Keyfactor Command create a new Certificate Store Type similar to the one belo
 - **Store PathType** – Freeform (user will enter the the location of the store)
 - **Private Keys** – Optional (a certificate in a PEM/PKCS12 Keystore may or may not contain a private key)
 - **PFX Password Style** – Select Custom.
-- **Job Types** – Discovery, Inventory, Add, and Remove are the 3 job types implemented by this AnyAgent
+- **Job Types** – Discovery, Inventory, Add, and Remove are the 3 job types implemented by this Orchestrator
 - **Parameters** – Three custom parameters are used for this store type. They are:
   - **Type (Name MUST be &quot;type&quot;):**
 
@@ -62,7 +75,7 @@ In Keyfactor Command create a new Certificate Store Type similar to the one belo
 ![](Images/Image14.png)
 
 
-**2. Register the PEM_PKCS12 AnyAgent with Keyfactor**
+**2. Register the PEM_PKCS12 Orchestrator with Keyfactor**
 
 Open the Keyfactor Windows Agent Configuration Wizard and perform the tasks as illustrated below:
 
@@ -88,7 +101,7 @@ Open the Keyfactor Windows Agent Configuration Wizard and perform the tasks as i
 
 ![](Images/Image10.png)
 
-- For each AnyAgent implementation, check **Load assemblies containing extension modules from other location** , browse to the location of the compiled AnyAgent dll, and click **\<Validate Capabilities\>**. Once all AnyAgents have been validated, click **\<Apply Configuration\>**.
+- For each Orchestrator implementation, check **Load assemblies containing extension modules from other location** , browse to the location of the compiled Orchestrator dll, and click **\<Validate Capabilities\>**. Once all Orchestrators have been validated, click **\<Apply Configuration\>**.
 
 ![](Images/Image11.png)
 
@@ -108,7 +121,7 @@ If you choose to manually create a PEM_PKCS12 store In Keyfactor Command rather 
 - **Separate Private Key File** – Check if the store has a separate private key file.
 - **Path to Private Key File** – If Separate Private Key File is checked, enter the FULL PATH to the private key file. File paths on Linux servers will always begin with a &quot;/&quot;. Windows servers will always begin with the drive letter, colon, and backslash, such as &quot;c:&quot;.
 - **Orchestrator** – Select the orchestrator you wish to use to manage this store
-- **Store Password** – Set the store password or set no password after clicking the supplied button.  If a store password is entered, this value will be used when encrypting private keys that get written to the certificate store during certificate add operations.  Selecting "No Password" will cause a system generated password to be used when encrypting private keys during certificate add operations.
+- **Store Password** – Set the store password or set no password after clicking the supplied button.  If a store password is entered, this value will be used when encrypting private keys that get written to the certificate store during certificate add operations.  Selecting "No Password" will cause an unencrypted private key to be saved during add operations.
 - **Inventory Schedule** – Set a schedule for running Inventory jobs or none, if you choose not to schedule Inventory at this time.
 
 **3b. (Optional) Schedule a PEM_PKCS12 Discovery Job**
@@ -136,7 +149,7 @@ From the Certificate Store list, edit the newly added store to enter the PEM_PKC
 
 **4. Update Settings in config.json**
 
-The PEM_PKCS12 AnyAgent uses a JSON config file:
+The PEM_PKCS12 Orchestrator uses a JSON config file:
 
 {  
 &quot;UseSudo&quot;: &quot;N&quot;,  
@@ -147,5 +160,11 @@ The PEM_PKCS12 AnyAgent uses a JSON config file:
 
 **UseSudo** - Y/N - Determines whether to prefix certain Linux command with &quot;sudo&quot;. This can be very helpful in ensuring that the user id running commands ssh uses &quot;least permissions necessary&quot; to process each task. Setting this value to &quot;Y&quot; will prefix all Linux commands with &quot;sudo&quot; with the expectation that the command being executed on the orchestrated Linux server will look in the sudoers file to determine whether the logged in ID has elevated permissions for that specific command. For orchestrated Windows servers, this setting has no effect. Setting this value to &quot;N&quot; will result in &quot;sudo&quot; not being added to Linux commands.  
 **CreateStoreOnAddIfMissing** - Y/N - Determines if during a Management-Add job if a certificate store should be creaed if it does not already exist.  If set to "N", the job will return an error with a message stating that the store does not exist.  
-**UseSeparateUploadFilePath** (Linux only) – When adding a certificate to a PEM or PKCS12 store, the PEM_PKCS12 AnyAgent must upload the certificate being deployed to the server where the certificate store resides. Setting this value to &quot;Y&quot; looks to the next setting, SeparateUploadFilePath, to determine where this file should be uploaded. Set this value to &quot;N&quot; to use the same path where the certificate store being managed resides.  
+**UseSeparateUploadFilePath** (Linux only) – When adding a certificate to a PEM or PKCS12 store, the PEM_PKCS12 Orchestrator must upload the certificate being deployed to the server where the certificate store resides. Setting this value to &quot;Y&quot; looks to the next setting, SeparateUploadFilePath, to determine where this file should be uploaded. Set this value to &quot;N&quot; to use the same path where the certificate store being managed resides.  
 **SeparateUploadFilePath** (Linux only) – Only used when UseSeparateUploadFilePath is set to &quot;Y&quot;. Set this to the path you wish to use as the location to upload and later remove PEM/PKCS12 certificate store data before being moved to the final destination.
+
+
+***
+
+### License
+[Apache](https://apache.org/licenses/LICENSE-2.0)
