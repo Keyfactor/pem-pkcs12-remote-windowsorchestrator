@@ -1,7 +1,7 @@
-# PEM_PKCS12
+# Remote PEM / PKCS12
 ## orchestrator
 
-The PEM_PKCS12 Orchestrator allows a user to discover, inventory, and manage (both add and remove) PEM and PKCS12 based certificate stores on both Windows and Linux servers. The communication between the orchestrator agent and the server being orchestrated is handled using SSH for Linux orchestrated servers and WinRM for Windows orchestrated servers.
+The remote PEM / PKCS12 Orchestrator allows for the remote management of PEM and PKCS12 based certificate stores. Discovery, Inventory, and Management functions are supported. The orchestrator performs operations by issuing remote commands over SSH to Linux based systems and via WinRM to Windows based systems.
 
 <!-- add integration specific information below -->
 *** 
