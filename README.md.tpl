@@ -31,6 +31,15 @@ The version number of a the PEM_PKCS12 Windows Orchestrator can be verified by r
 
 The PEM_PKCS12 Windows Orchestrator has been tested against Keyfactor version 8.1.1 but should work against earlier or later versions.
 
+## Security Considerations
+
+**For Linux orchestrated servers:**
+1. The PEM_PKCS12 AnyAgent makes use of Linux commands such as "cp" and "find".  If the credentials you will be connecting with will need elevated access to run these commands, you must set the id up as a sudoer with no password necessary and set the config.json "UseSudo" value to "Y" (See Section 4 regarding the config.json file).
+2. The PEM_PKCS12 AnyAgent makes use of SFTP to transfer files to and from the orchestrated server.  SFTP will not mske use of sudo, so all folders containing certificate stores will need to allow SFTP file transfer.  If this is not possible, set the values in the config.json apprpriately to use an alternative upload/download folder that does have SFTP file transfer (See Section 4 regarding the config.json file).
+
+**For Windows orchestrated servers:**
+1. Make sure that WinRM is set up on the orchestrated server and that the WinRM port is part of the certificate store path when setting up your certificate stores (See Section 3a below). 
+
 ## PEM_PKCS12 Orchestrator Configuration
 
 **1. Create the New Certificate Store Type for the New PEM_PKCS12 Orchestrator**

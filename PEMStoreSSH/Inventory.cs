@@ -70,7 +70,7 @@ namespace PEMStoreSSH
                     inventoryItems.Add(new AgentCertStoreInventoryItem()
                     {
                         ItemStatus = AgentInventoryItemStatus.Unknown,
-                        Alias = certificates[0].Thumbprint,
+                        Alias = string.IsNullOrEmpty(certificates[0].FriendlyName) ? certificates[0].Thumbprint : certificates[0].FriendlyName,
                         PrivateKeyEntry = containsPrivateKey,
                         UseChainLevel = isAChain,
                         Certificates = certList.ToArray()
@@ -83,7 +83,7 @@ namespace PEMStoreSSH
                         inventoryItems.Add(new AgentCertStoreInventoryItem()
                         {
                             ItemStatus = AgentInventoryItemStatus.Unknown,
-                            Alias = certificate.Thumbprint,
+                            Alias = string.IsNullOrEmpty(certificates[0].FriendlyName) ? certificates[0].Thumbprint : certificates[0].FriendlyName,
                             PrivateKeyEntry = containsPrivateKey,
                             UseChainLevel = isAChain,
                             Certificates = new string[] { Convert.ToBase64String(certificate.Export(X509ContentType.Cert)) }
