@@ -1,3 +1,7 @@
+v1.1.0:
+- Add support for alias (friendly) name for PKCS12 certificate stores
+- Add local PAM capability for resolving the server password
+
 v1.0.10:
 - Modify private key encryption handling so that if a store password is used, the private key of a cert will be encrypted with that password during add operations.  If no store password is set, the private key will be saved without encryption.
 

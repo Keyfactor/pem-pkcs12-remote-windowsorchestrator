@@ -8,10 +8,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
+using CSS.PKI.X509;
+
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.X509;
 
 using PEMStoreSSH.RemoteHandlers;
 
@@ -32,7 +37,7 @@ namespace PEMStoreSSH
             {
                 X509Certificate2Collection certCollection = new X509Certificate2Collection();
 
-                if (binaryCertificates.Length > 0)
+                if (binaryCertificates.Length > 50)
                 {
                     certCollection.Import(binaryCertificates, storePassword, X509KeyStorageFlags.Exportable);
 
@@ -64,16 +69,44 @@ namespace PEMStoreSSH
         public List<SSHFileInfo> CreateCertificatePacket(string certToAdd, string alias, string pfxPassword, string storePassword, bool hasSeparatePrivateKey)
         {
             List<SSHFileInfo> fileInfo = new List<SSHFileInfo>();
-            Pkcs12Store store;
 
+            X509Certificate2 x509Cert = new X509Certificate2(Convert.FromBase64String(certToAdd), pfxPassword);
+            string aliasToUse = string.IsNullOrEmpty(alias) ? x509Cert.Thumbprint : alias;
+
+            Pkcs12Store tempStore = new Pkcs12Store();
             using (MemoryStream inStream = new MemoryStream(Convert.FromBase64String(certToAdd)))
             {
-                store = new Pkcs12Store(inStream, pfxPassword.ToCharArray());
+                if (string.IsNullOrEmpty(pfxPassword))
+                {
+                    CertificateConverter converter = CertificateConverterFactory.FromDER(Encoding.ASCII.GetBytes(certToAdd));
+                    Org.BouncyCastle.X509.X509Certificate bcCert = converter.ToBouncyCastleCertificate();
+                    X509CertificateEntry entry = new X509CertificateEntry(bcCert);
+                    tempStore.SetCertificateEntry(aliasToUse, entry);
+                }
+                else
+                {
+                    tempStore = new Pkcs12Store(inStream, pfxPassword.ToCharArray());
+                }
+            }
+
+            string tempAlias = string.Empty;
+            foreach (string name in tempStore.Aliases)
+            {
+                tempAlias = name;
+                break;
+            }
+
+            Pkcs12Store store = new Pkcs12Store();
+
+            store.SetCertificateEntry(aliasToUse, tempStore.GetCertificate(tempAlias));
+            if (!string.IsNullOrEmpty(pfxPassword))
+            {
+                store.SetKeyEntry(aliasToUse, tempStore.GetKey(tempAlias), tempStore.GetCertificateChain(tempAlias));
             }
 
             using (MemoryStream outStream = new MemoryStream())
             {
-                store.Save(outStream, string.IsNullOrEmpty(storePassword) ? pfxPassword.ToCharArray() : storePassword.ToCharArray(), new Org.BouncyCastle.Security.SecureRandom());
+                store.Save(outStream, string.IsNullOrEmpty(storePassword) ? new char[0] : storePassword.ToCharArray(), new Org.BouncyCastle.Security.SecureRandom());
                 fileInfo.Add(new SSHFileInfo()
                 {
                     FileType = SSHFileInfo.FileTypeEnum.Certificate,
@@ -84,6 +117,7 @@ namespace PEMStoreSSH
 
             return fileInfo;
         }
+
 
         public void AddCertificateToStore(List<SSHFileInfo> files, string storePath, string privateKeyPath, IRemoteHandler ssh, PEMStore.ServerTypeEnum serverType, bool hasPrivateKey, bool overwrite, bool isSingleCertificateStore)
         {
