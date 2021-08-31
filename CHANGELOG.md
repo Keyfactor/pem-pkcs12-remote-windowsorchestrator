@@ -1,3 +1,6 @@
+v1.2.0:
+- Fix issue where adding multiple certificates to an existing store via multiple concurrent Management jobs was causing some certificates to not get added
+
 v1.1.0:
 - Add support for alias (friendly) name for PKCS12 certificate stores
 - Add local PAM capability for resolving the server password

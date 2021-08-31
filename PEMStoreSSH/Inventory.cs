@@ -83,7 +83,7 @@ namespace PEMStoreSSH
                         inventoryItems.Add(new AgentCertStoreInventoryItem()
                         {
                             ItemStatus = AgentInventoryItemStatus.Unknown,
-                            Alias = string.IsNullOrEmpty(certificates[0].FriendlyName) ? certificates[0].Thumbprint : certificates[0].FriendlyName,
+                            Alias = string.IsNullOrEmpty(certificate.FriendlyName) ? certificate.Thumbprint : certificate.FriendlyName,
                             PrivateKeyEntry = containsPrivateKey,
                             UseChainLevel = isAChain,
                             Certificates = new string[] { Convert.ToBase64String(certificate.Export(X509ContentType.Cert)) }

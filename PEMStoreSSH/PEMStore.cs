@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 
 using PEMStoreSSH.RemoteHandlers;
 using Keyfactor.Extensions.Pam.Utilities;
@@ -20,6 +21,8 @@ namespace PEMStoreSSH
     {
         private const string NO_EXTENSION = "noext";
         private const string FULL_SCAN = "fullscan";
+
+        static Mutex mutex = new Mutex(false, "ModifyStore");
 
         public enum FormatTypeEnum
         {
@@ -116,17 +119,23 @@ namespace PEMStoreSSH
         {
             try
             {
+                mutex.WaitOne();
                 CertificateHandler.RemoveCertificate(ServerType, StorePath, PrivateKeyPath, SSH, alias, String.IsNullOrEmpty(PrivateKeyPath));
             }
             catch (Exception ex)
             {
                 throw new PEMException($"Error attempting to remove certificate from store {StorePath}.", ex);
             }
+            finally
+            {
+                mutex.ReleaseMutex();
+            }
 
             if (!string.IsNullOrEmpty(PrivateKeyPath))
             {
                 try
                 {
+                    mutex.WaitOne();
                     SSH.RemoveCertificateFile(PrivateKeyPath);
                     SSH.CreateEmptyStoreFile(PrivateKeyPath);
                 }
@@ -134,6 +143,11 @@ namespace PEMStoreSSH
                 {
                     throw new PEMException($"Error attempting to remove private key {PrivateKeyPath}.", ex);
                 }
+                finally
+                {
+                    mutex.ReleaseMutex();
+                }
+
             }
         }
 
@@ -141,12 +155,17 @@ namespace PEMStoreSSH
         {
             try
             {
+                mutex.WaitOne();
                 List<SSHFileInfo> files = CertificateHandler.CreateCertificatePacket(cert, alias, pfxPassword, storePassword, !String.IsNullOrEmpty(PrivateKeyPath));
                 CertificateHandler.AddCertificateToStore(files, StorePath, PrivateKeyPath, SSH, ServerType, overwrite, containsPrivateKey, IsSingleCertificateStore);
             }
             catch (Exception ex)
             {
                 throw new PEMException($"Error attempting to add certificate to store {StorePath}.", ex);
+            }
+            finally
+            {
+                mutex.ReleaseMutex();
             }
         }
 
