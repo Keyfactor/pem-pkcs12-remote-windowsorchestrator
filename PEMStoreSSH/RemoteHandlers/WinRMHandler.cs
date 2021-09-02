@@ -30,7 +30,14 @@ namespace PEMStoreSSH.RemoteHandlers
 
             try
             {
-                using (Runspace runspace = RunspaceFactory.CreateRunspace(new WSManConnectionInfo(new System.Uri($"{Server}/wsman"))))
+                WSManConnectionInfo connectionInfo = new WSManConnectionInfo(new System.Uri($"{Server}/wsman"));
+                if (ApplicationSettings.UseNegotiateAuth)
+                {
+                    connectionInfo.AuthenticationMechanism = AuthenticationMechanism.Negotiate;
+                }
+                Logger.Trace($"WinRM Authentication Mechanism: {Enum.GetName(typeof(AuthenticationMechanism), connectionInfo.AuthenticationMechanism)}");
+
+                using (Runspace runspace = RunspaceFactory.CreateRunspace(connectionInfo))
                 {
                     runspace.Open();
                     using (PowerShell ps = PowerShell.Create())
