@@ -1,7 +1,7 @@
 # This workflow will run automatic builds for checkins to feature branches
 # It runs automtatically for branches that are not main, or release-* branches (including prerelease)
 
-name: Keyfactor - Build .NET Solution
+name: Keyfactor - Build .NET Solution 
 
 on:
   push: # build on push
