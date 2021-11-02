@@ -34,7 +34,10 @@ The PEM_PKCS12 Windows Orchestrator has been tested against Keyfactor version 8.
 ## Security Considerations
 
 **For Linux orchestrated servers:**
-1. The PEM_PKCS12 AnyAgent makes use of Linux commands such as "cp" and "find".  If the credentials you will be connecting with will need elevated access to run these commands, you must set the id up as a sudoer with no password necessary and set the config.json "UseSudo" value to "Y" (See Section 4 regarding the config.json file).
+1. The PEM-PKCS12 AnyAgent makes use of a few common Linux commands. If the credentials you will be connecting with will need elevated access to run these commands, you must set the id up as a sudoer with no password necessary and set the config.json "UseSudo" value to "Y" (See Section 4 regarding the config.json file). The full list of these commands below:
+    * echo
+    * grep
+    * find
 2. The PEM_PKCS12 AnyAgent makes use of SFTP to transfer files to and from the orchestrated server.  SFTP will not mske use of sudo, so all folders containing certificate stores will need to allow SFTP file transfer.  If this is not possible, set the values in the config.json apprpriately to use an alternative upload/download folder that does have SFTP file transfer (See Section 4 regarding the config.json file).
 
 **For Windows orchestrated servers:**
