@@ -52,28 +52,28 @@ In Keyfactor Command create a new Certificate Store Type similar to the one belo
 ![](Images/Image1.png)
 
 - **Name** – Required. The display name of the new Certificate Store Type
-- **Short Name** – Required. **MUST** be &quot;PEM-SSH&quot;
+- **Short Name** – Required. **MUST** be "PEM-SSH"
 - **Needs Server, Blueprint Allowed, Requires Store Password, Supports Entry Password** – All checked/unchecked as shown
 - **Supports Custom Alias** – Required. Select Forbidden. Aliases are not used for PEM and PKCS12 stores.
 - **Use PowerShell** – Unchecked
-- **Store PathType** – Freeform (user will enter the the location of the store)
+- **Store PathType** – Freeform (user will enter the location of the store)
 - **Private Keys** – Optional (a certificate in a PEM/PKCS12 Keystore may or may not contain a private key)
 - **PFX Password Style** – Select Custom.
 - **Job Types** – Discovery, Inventory, Add, and Remove are the 3 job types implemented by this Orchestrator
 - **Parameters** – Three custom parameters are used for this store type. They are:
-  - **Type (Name MUST be &quot;type&quot;):**
+  - **Type (Name MUST be "type"):**
 
 ![](Images/Image2.png)
 
-  - **Separate Private Key File (Name MUST be &quot;separatePrivateKey:** Only applicable for Type=PEM stores, select if the store will contain a private key but the private key will reside in an separate file somewhere else on the server
+  - **Separate Private Key File (Name MUST be "separatePrivateKey"):** Only applicable for Type=PEM stores, select if the store will contain a private key but the private key will reside in an separate file somewhere else on the server
 
 ![](Images/Image3.png)
 
-  - **Path to Private Key File (Name MUST be &quot;pathToPrivateKey&quot;):** Only applicable for Type=PEM stores. If the PEM certificate store has a separate private key file, this is the FULL PATH and file name where the private key resides. File paths on Linux servers will always begin with a &quot;/&quot;. Windows servers will always begin with the drive letter, colon, and backslash, such as &quot;c:\&quot;.
+  - **Path to Private Key File (Name MUST be "pathToPrivateKey"):** Only applicable for Type=PEM stores. If the PEM certificate store has a separate private key file, this is the FULL PATH and file name where the private key resides. File paths on Linux servers will always begin with a "/". Windows servers will always begin with the drive letter, colon, and backslash, such as "c:\\".
 
 ![](Images/Image4.png)
 
-  - **Contains Single Certificate (Name MUST be &quot;isSingleCertificateStore&quot;):** Optional parameter, default value 'False'.  If set to 'True' this certificate store will be managed with the assumption that only one certificate can exist in the store.  All Managment-Add jobs against this store will completely replace the contents of the store with the added certificate, assuming overwrite is set to 'True' for the job.  If overwrite is not selected ('False'), the Management-Add job will complete with an error saying a certificate already exists.  No alias/thumbprint matching will be done when adding/renewing a certificate when this value is set to 'True'.
+  - **Contains Single Certificate (Name MUST be "isSingleCertificateStore"):** Optional parameter, default value 'False'.  If set to 'True' this certificate store will be managed with the assumption that only one certificate can exist in the store.  All Management-Add jobs against this store will completely replace the contents of the store with the added certificate, assuming overwrite is set to 'True' for the job.  If overwrite is not selected ('False'), the Management-Add job will complete with an error saying a certificate already exists.  No alias/thumbprint matching will be done when adding/renewing a certificate when this value is set to 'True'.
 
 ![](Images/Image14.png)
 
@@ -118,11 +118,19 @@ If you choose to manually create a PEM_PKCS12 store In Keyfactor Command rather 
 
 - **Category** – Required. The PEM SSH type name must be selected.
 - **Container** – Optional. Select a container if utilized.
-- **Client Machine &amp; Credentials** – Required. The server name or IP Address and login credentials for the server where the Certificate Store is located.When setting up a Windows server, the format of the machine name must be – [http://_ServerName_:5985](http://ServerName:5985/), where &quot;5985&quot; is the WinRM port number. 5985 is the standard, but if your organization uses a different, use that.
-- **Store Path** – Required. The FULL PATH and file name of the PEM/PKCS12 store being managed. File paths on Linux servers will always begin with a &quot;/&quot;. Windows servers will always begin with the drive letter, colon, and backslash, such as &quot;c:\&quot;.
+- **Client Machine & Credentials** – Required. The server name or IP Address and login credentials for the server where the Certificate Store is located.  The credentials for server login can be any of:
+
+  - UserId/Password
+
+  - UserId/SSH private key (entered in the password field)
+
+  - PAM provider information to pass the UserId/Password or UserId/SSH private key credentials
+
+  When setting up a Windows server, the format of the machine name must be – [http://_ServerName_:5985](http://ServerName:5985/), where "5985" is the WinRM port number. 5985 is the standard, but if your organization uses a different, use that.  The credentials used will be the Keyfactor Command service account.  Because of this, for Windows orchestrated servers, setting an additional set of credentials is not necessary.  **However, it is required that the *Change Credentials* link still be clicked on and the resulting dialog closed by clicking OK.**
+- **Store Path** – Required. The FULL PATH and file name of the PEM/PKCS12 store being managed. File paths on Linux servers will always begin with a "/". Windows servers will always begin with the drive letter, colon, and backslash, such as "c:\\".
 - **Type** – Select either PEM or PKCS12
 - **Separate Private Key File** – Check if the store has a separate private key file.
-- **Path to Private Key File** – If Separate Private Key File is checked, enter the FULL PATH to the private key file. File paths on Linux servers will always begin with a &quot;/&quot;. Windows servers will always begin with the drive letter, colon, and backslash, such as &quot;c:&quot;.
+- **Path to Private Key File** – If Separate Private Key File is checked, enter the FULL PATH to the private key file. File paths on Linux servers will always begin with a "/". Windows servers will always begin with the drive letter, colon, and backslash, such as "c:".
 - **Orchestrator** – Select the orchestrator you wish to use to manage this store
 - **Store Password** – Set the store password or set no password after clicking the supplied button.  If a store password is entered, this value will be used when encrypting private keys that get written to the certificate store during certificate add operations.  Selecting "No Password" will cause an unencrypted private key to be saved during add operations.
 - **Inventory Schedule** – Set a schedule for running Inventory jobs or none, if you choose not to schedule Inventory at this time.
@@ -137,11 +145,11 @@ First, in Keyfactor Command navigate to Certificate Locations =\> Certificate St
 
 - **Category** – Required. The PEM SSH type name must be selected.
 - **Orchestrator** – Select the orchestrator you wish to use to manage this store
-- **Client Machine &amp; Credentials** – Required. The server name or IP Address and login credentials for the server where the Certificate Store is located. When setting up a Windows server, the format of the machine name must be – [http://_ServerName_:5985](http://ServerName:5985/), where &quot;5985&quot; is the WinRM port number. 5985 is the standard, but if your organization uses a different, use that.
+- **Client Machine & Credentials** – Required. The server name or IP Address and login credentials for the server where the Certificate Store is located. When setting up a Windows server, the format of the machine name must be – [http://_ServerName_:5985](http://ServerName:5985/), where "5985" is the WinRM port number. 5985 is the standard, but if your organization uses a different, use that.
 - **When** – Required. The date and time when you would like this to execute.
-- **Directories to search** – Required. A comma delimited list of the FULL PATHs and file names where you would like to recursively search for PEM/PKCS12 stores. File paths on Linux servers will always begin with a &quot;/&quot;. Windows servers will always begin with the drive letter, colon, and backslash, such as &quot;c:\\&quot;.  Entering the string "fullscan" when Discovering against a Windows server will automatically do a recursive search on ALL local drives on the server.
-- **Directories to ignore** – Optional. A comma delimited list of the FULL PATHs that should be recursively ignored when searching for PEM/PKCS12 stores. Linux file paths will always begin with a &quot;/&quot;. Windows servers will always begin with the drive letter, colon, and backslash, such as &quot;c:\\&quot;.
-- **Extensions** – Optional but suggested. A comma delimited list of the file extensions (no leading &quot;.&quot; should be included) the job should search for. If not included, only files in the searched paths that have **no file extension** will be returned. If providing a list of extensions, using &quot;noext&quot; as one of the extensions will also return files with no file extension. For example, providing an Extensions list of &quot;pem, noext&quot; would return all file locations within the paths being searched with a file extension of &quot;pem&quot; and files with no extensions.
+- **Directories to search** – Required. A comma delimited list of the FULL PATHs and file names where you would like to recursively search for PEM/PKCS12 stores. File paths on Linux servers will always begin with a "/". Windows servers will always begin with the drive letter, colon, and backslash, such as "c:\\".  Entering the string "fullscan" when Discovering against a Windows server will automatically do a recursive search on ALL local drives on the server.
+- **Directories to ignore** – Optional. A comma delimited list of the FULL PATHs that should be recursively ignored when searching for PEM/PKCS12 stores. Linux file paths will always begin with a "/". Windows servers will always begin with the drive letter, colon, and backslash, such as "c:\\".
+- **Extensions** – Optional but suggested. A comma delimited list of the file extensions (no leading "." should be included) the job should search for. If not included, only files in the searched paths that have **no file extension** will be returned. If providing a list of extensions, using "noext" as one of the extensions will also return files with no file extension. For example, providing an Extensions list of "pem, noext" would return all file locations within the paths being searched with a file extension of "pem" and files with no extensions.
 - **File name patterns to match** – Optional. A comma delimited list of full or partial file names (NOT including extension) to match on.  Use "\*" as a wildcard for begins with or ends with.  Example: entering "ab\*, \*cd\*, \*ef, ghij" will return all stores with names that _**begin with**_ "ab" AND stores with names that _**contain**_ "cd" AND stores with names _**ending in**_ "ef" AND stores with the _**exact name**_ of "ghij".
 - **Follow SymLinks** – NOT IMPLEMENTED. Leave unchecked.
 - **Include PKCS12 Files** – Leave unchecked to validate that each certificate store returned is of type = PEM. Checking this box will return all found certificate stores without validation. Leave this selection unchecked when attempting to Discover PKCS12 stores.
@@ -155,17 +163,17 @@ From the Certificate Store list, edit the newly added store to enter the PEM_PKC
 The PEM_PKCS12 Orchestrator uses a JSON config file:
 
 {  
-&quot;UseSudo&quot;: &quot;N&quot;,  
-&quot;CreateStoreOnAddIfMissing&quot;: &quot;N&quot;,  
-&quot;UseSeparateUploadFilePath&quot;: &quot;N&quot;,  
-&quot;SeparateUploadFilePath&quot;: &quot;/path/to/upload/folder/&quot;,  
-&quot;UseNegotiateAuth&quot;: &quot;N&quot;  
+"UseSudo": "N",  
+"CreateStoreOnAddIfMissing": "N",  
+"UseSeparateUploadFilePath": "N",  
+"SeparateUploadFilePath": "/path/to/upload/folder/",  
+"UseNegotiateAuth": "N"  
 }
 
-**UseSudo** - Y/N - Determines whether to prefix certain Linux command with &quot;sudo&quot;. This can be very helpful in ensuring that the user id running commands ssh uses &quot;least permissions necessary&quot; to process each task. Setting this value to &quot;Y&quot; will prefix all Linux commands with &quot;sudo&quot; with the expectation that the command being executed on the orchestrated Linux server will look in the sudoers file to determine whether the logged in ID has elevated permissions for that specific command. For orchestrated Windows servers, this setting has no effect. Setting this value to &quot;N&quot; will result in &quot;sudo&quot; not being added to Linux commands.  
-**CreateStoreOnAddIfMissing** - Y/N - Determines if during a Management-Add job if a certificate store should be creaed if it does not already exist.  If set to "N", the job will return an error with a message stating that the store does not exist.  
-**UseSeparateUploadFilePath** (Linux only) – When adding a certificate to a PEM or PKCS12 store, the PEM_PKCS12 Orchestrator must upload the certificate being deployed to the server where the certificate store resides. Setting this value to &quot;Y&quot; looks to the next setting, SeparateUploadFilePath, to determine where this file should be uploaded. Set this value to &quot;N&quot; to use the same path where the certificate store being managed resides.  
-**SeparateUploadFilePath** (Linux only) – Only used when UseSeparateUploadFilePath is set to &quot;Y&quot;. Set this to the path you wish to use as the location to upload and later remove PEM/PKCS12 certificate store data before being moved to the final destination.  
+**UseSudo** - Y/N - Determines whether to prefix certain Linux command with "sudo". This can be very helpful in ensuring that the user id running commands ssh uses "least permissions necessary" to process each task. Setting this value to "Y" will prefix all Linux commands with "sudo" with the expectation that the command being executed on the orchestrated Linux server will look in the sudoers file to determine whether the logged in ID has elevated permissions for that specific command. For orchestrated Windows servers, this setting has no effect. Setting this value to "N" will result in "sudo" not being added to Linux commands.  
+**CreateStoreOnAddIfMissing** - Y/N - Determines if during a Management-Add job if a certificate store should be created if it does not already exist.  If set to "N", the job will return an error with a message stating that the store does not exist.  
+**UseSeparateUploadFilePath** (Linux only) – When adding a certificate to a PEM or PKCS12 store, the PEM_PKCS12 Orchestrator must upload the certificate being deployed to the server where the certificate store resides. Setting this value to "Y" looks to the next setting, SeparateUploadFilePath, to determine where this file should be uploaded. Set this value to "N" to use the same path where the certificate store being managed resides.  
+**SeparateUploadFilePath** (Linux only) – Only used when UseSeparateUploadFilePath is set to "Y". Set this to the path you wish to use as the location to upload and later remove PEM/PKCS12 certificate store data before being moved to the final destination.  
 **UseNegotiateAuth** (Windows only) – Y/N - Determines if WinRM should use Negotiate (Y) when connecting to the remote server.
 
 
