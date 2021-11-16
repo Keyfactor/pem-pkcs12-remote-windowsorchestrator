@@ -56,7 +56,7 @@ In Keyfactor Command create a new Certificate Store Type similar to the one belo
 - **Needs Server, Blueprint Allowed, Requires Store Password, Supports Entry Password** – All checked/unchecked as shown
 - **Supports Custom Alias** – Required. Select Forbidden. Aliases are not used for PEM and PKCS12 stores.
 - **Use PowerShell** – Unchecked
-- **Store PathType** – Freeform (user will enter the the location of the store)
+- **Store PathType** – Freeform (user will enter the location of the store)
 - **Private Keys** – Optional (a certificate in a PEM/PKCS12 Keystore may or may not contain a private key)
 - **PFX Password Style** – Select Custom.
 - **Job Types** – Discovery, Inventory, Add, and Remove are the 3 job types implemented by this Orchestrator
@@ -65,7 +65,7 @@ In Keyfactor Command create a new Certificate Store Type similar to the one belo
 
 ![](Images/Image2.png)
 
-  - **Separate Private Key File (Name MUST be "separatePrivateKey:** Only applicable for Type=PEM stores, select if the store will contain a private key but the private key will reside in an separate file somewhere else on the server
+  - **Separate Private Key File (Name MUST be "separatePrivateKey"):** Only applicable for Type=PEM stores, select if the store will contain a private key but the private key will reside in an separate file somewhere else on the server
 
 ![](Images/Image3.png)
 
