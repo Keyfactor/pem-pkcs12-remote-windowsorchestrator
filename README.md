@@ -38,6 +38,10 @@ The PEM_PKCS12 Windows Orchestrator has been tested against Keyfactor Windows Or
     * echo
     * grep
     * find
+    * touch
+    * who
+    * awk
+    * chown
 2. The PEM_PKCS12 AnyAgent makes use of SFTP to transfer files to and from the orchestrated server.  SFTP will not make use of sudo, so all folders containing certificate stores will need to allow SFTP file transfer.  If this is not possible, set the values in the config.json apprpriately to use an alternative upload/download folder that does have SFTP file transfer (See Section 4 regarding the config.json file).
 
 **For Windows orchestrated servers:**
