@@ -179,14 +179,16 @@ The PEM_PKCS12 Orchestrator uses a JSON config file:
 "CreateStoreOnAddIfMissing": "N",  
 "UseSeparateUploadFilePath": "N",  
 "SeparateUploadFilePath": "/path/to/upload/folder/",  
-"UseNegotiateAuth": "N"  
+"UseNegotiateAuth": "N"  ,  
+"UseSCP": "N"  
 }
 
 **UseSudo** - Y/N - Determines whether to prefix certain Linux command with "sudo". This can be very helpful in ensuring that the user id running commands ssh uses "least permissions necessary" to process each task. Setting this value to "Y" will prefix all Linux commands with "sudo" with the expectation that the command being executed on the orchestrated Linux server will look in the sudoers file to determine whether the logged in ID has elevated permissions for that specific command. For orchestrated Windows servers, this setting has no effect. Setting this value to "N" will result in "sudo" not being added to Linux commands.  
 **CreateStoreOnAddIfMissing** - Y/N - Determines if during a Management-Add job if a certificate store should be created if it does not already exist.  If set to "N", the job will return an error with a message stating that the store does not exist.  
 **UseSeparateUploadFilePath** (Linux only) – When adding a certificate to a PEM or PKCS12 store, the PEM_PKCS12 Orchestrator must upload the certificate being deployed to the server where the certificate store resides. Setting this value to "Y" looks to the next setting, SeparateUploadFilePath, to determine where this file should be uploaded. Set this value to "N" to use the same path where the certificate store being managed resides.  
 **SeparateUploadFilePath** (Linux only) – Only used when UseSeparateUploadFilePath is set to "Y". Set this to the path you wish to use as the location to upload and later remove PEM/PKCS12 certificate store data before being moved to the final destination.  
-**UseNegotiateAuth** (Windows only) – Y/N - Determines if WinRM should use Negotiate (Y) when connecting to the remote server.
+**UseNegotiateAuth** (Windows only) – Y/N - Determines if WinRM should use Negotiate (Y) when connecting to the remote server.  
+**UseSCP** (Optional, Linux only) - Y/N - Detemines if SCP (Y) or SFTP (N) should be used in uploading certificate files during Management-Add jobs.  
 
 
 ***

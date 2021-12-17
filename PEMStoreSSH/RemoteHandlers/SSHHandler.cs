@@ -79,21 +79,9 @@ namespace PEMStoreSSH.RemoteHandlers
         {
             Logger.Debug($"DoesFileExist: {path}");
 
-            using (SftpClient client = new SftpClient(Connection))
-            {
-                try
-                {
-                    client.Connect();
-                    string existsPath = FormatFTPPath(path);
-                    bool exists = client.Exists(existsPath);
-
-                    return exists;
-                }
-                finally
-                {
-                    client.Disconnect();
-                }
-            }
+            string NOT_EXISTS = "no such file or directory";
+            string result = RunCommand($"ls {path}", null, ApplicationSettings.UseSudo, null);
+            return !result.ToLower().Contains(NOT_EXISTS);
         }
 
         public override void UploadCertificateFile(string path, byte[] certBytes)
@@ -110,30 +98,69 @@ namespace PEMStoreSSH.RemoteHandlers
                 uploadPath = ApplicationSettings.SeparateUploadFilePath + altFileNameOnly;
             }
 
-            using (SftpClient client = new SftpClient(Connection))
+            if (ApplicationSettings.UseSCP)
             {
-                try
+                using (ScpClient client = new ScpClient(Connection))
                 {
-                    client.Connect();
-
-                    using (MemoryStream stream = new MemoryStream(certBytes))
+                    try
                     {
-                        client.UploadFile(stream, FormatFTPPath(uploadPath));
-                    }
+                        client.Connect();
 
-                    if (ApplicationSettings.UseSeparateUploadFilePath)
-                        RunCommand($"mv {uploadPath} {path}", null, ApplicationSettings.UseSudo, null);
-                }
-                finally
-                {
-                    client.Disconnect();
+                        using (MemoryStream stream = new MemoryStream(certBytes))
+                        {
+                            client.Upload(stream, FormatFTPPath(path));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Debug("Exception during SCP upload...");
+                        Logger.Debug($"Upload Exception: {ExceptionHandler.FlattenExceptionMessages(ex, ex.Message)}");
+                        throw ex;
+                    }
+                    finally
+                    {
+                        client.Disconnect();
+                    }
                 }
             }
+            else
+            {
+                using (SftpClient client = new SftpClient(Connection))
+                {
+                    try
+                    {
+                        client.Connect();
+
+                        using (MemoryStream stream = new MemoryStream(certBytes))
+                        {
+                            client.UploadFile(stream, FormatFTPPath(uploadPath));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Debug("Exception during SFTP upload...");
+                        Logger.Debug($"Upload Exception: {ExceptionHandler.FlattenExceptionMessages(ex, ex.Message)}");
+                        throw ex;
+                    }
+                    finally
+                    {
+                        client.Disconnect();
+                    }
+                }
+            }
+
+            if (ApplicationSettings.UseSeparateUploadFilePath)
+            {
+                RunCommand($"mv {uploadPath} {path}", null, ApplicationSettings.UseSudo, null);
+            }
         }
+
 
         public override byte[] DownloadCertificateFile(string path, bool hasBinaryContent)
         {
             Logger.Debug($"DownloadCertificateFile: {path}");
+
+            byte[] rtnStore;
 
             string downloadPath = path;
             string altPathOnly = string.Empty;
@@ -145,46 +172,65 @@ namespace PEMStoreSSH.RemoteHandlers
                 downloadPath = ApplicationSettings.SeparateUploadFilePath + altFileNameOnly;
             }
 
-            using (SftpClient client = new SftpClient(Connection))
+            if (ApplicationSettings.UseSeparateUploadFilePath)
             {
-                try
+                RunCommand($"cp {path} {downloadPath}", null, ApplicationSettings.UseSudo, null);
+            }
+
+            if (ApplicationSettings.UseSCP)
+            {
+                using (ScpClient client = new ScpClient(Connection))
                 {
-                    client.Connect();
-
-                    if (ApplicationSettings.UseSeparateUploadFilePath)
-                        RunCommand($"cp {path} {downloadPath}", null, ApplicationSettings.UseSudo, null);
-
-                    using (MemoryStream stream = new MemoryStream())
+                    try
                     {
-                        client.DownloadFile(FormatFTPPath(downloadPath), stream);
-                        if (ApplicationSettings.UseSeparateUploadFilePath)
-                            RunCommand($"rm {downloadPath}", null, ApplicationSettings.UseSudo, null);
-                        return stream.ToArray();
+                        client.Connect();
+
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            client.Download(FormatFTPPath(downloadPath), stream);
+                            rtnStore = stream.ToArray();
+                        }
+                    }
+                    finally
+                    {
+                        client.Disconnect();
                     }
                 }
-                finally
+            }
+            else
+            {
+                using (SftpClient client = new SftpClient(Connection))
                 {
-                    client.Disconnect();
+                    try
+                    {
+                        client.Connect();
+
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            client.DownloadFile(FormatFTPPath(downloadPath), stream);
+                            rtnStore = stream.ToArray();
+                        }
+                    }
+                    finally
+                    {
+                        client.Disconnect();
+                    }
                 }
             }
+
+            if (ApplicationSettings.UseSeparateUploadFilePath)
+            {
+                RunCommand($"rm {downloadPath}", null, ApplicationSettings.UseSudo, null);
+            }
+
+            return rtnStore;
         }
 
         public override void RemoveCertificateFile(string path)
         {
             Logger.Debug($"RemoveCertificateFile: {path}");
 
-            using (SftpClient client = new SftpClient(Connection))
-            {
-                try
-                {
-                    client.Connect();
-                    client.DeleteFile(FormatFTPPath(path));
-                }
-                finally
-                {
-                    client.Disconnect();
-                }
-            }
+            RunCommand($"rm {path}", null, ApplicationSettings.UseSudo, null);
         }
 
         public override void CreateEmptyStoreFile(string path)
