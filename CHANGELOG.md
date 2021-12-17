@@ -1,4 +1,7 @@
-v1.3
+v1.3.1
+- Use sudo when specified for creating new stores
+
+v1.3.0
 - Add config option to use Negotiate when connecting to Windows servers via WinRM
 - Updated Renci.SSH.Net reference
 
