@@ -1,3 +1,6 @@
+v1.4.0
+- Add support for SCP protocol for transferring files as an alternative to SFTP
+
 v1.3.1
 - Use sudo when specified for creating new stores
 
