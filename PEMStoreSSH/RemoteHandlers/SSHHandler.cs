@@ -65,7 +65,7 @@ namespace PEMStoreSSH.RemoteHandlers
                         Logger.Debug($"RunCommand: {displayCommand}");
                         command.Execute();
                         Logger.Debug($"SSH Results: {displayCommand}::: {command.Result}::: {command.Error}");
-                        return command.Result;
+                        return string.IsNullOrEmpty(command.Result) && !string.IsNullOrEmpty(command.Error) ? command.Error : command.Result;
                     }
                 }
                 finally
