@@ -3,5 +3,6 @@
   "CreateStoreOnAddIfMissing": "Y",
   "UseSeparateUploadFilePath": "N",
   "SeparateUploadFilePath": "/path/to/upload/folder/",
-  "UseNegotiateAuth": "N"
+  "UseNegotiateAuth": "N",
+  "UseSCP":  "N"
 }
