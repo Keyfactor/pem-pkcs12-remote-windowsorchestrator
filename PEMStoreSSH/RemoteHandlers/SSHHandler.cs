@@ -98,7 +98,39 @@ namespace PEMStoreSSH.RemoteHandlers
                 uploadPath = ApplicationSettings.SeparateUploadFilePath + altFileNameOnly;
             }
 
-            if (ApplicationSettings.UseSCP)
+            bool succUpload = false;
+            if (ApplicationSettings.UseSFTP)
+            {
+                using (SftpClient client = new SftpClient(Connection))
+                {
+                    try
+                    {
+                        client.Connect();
+
+                        using (MemoryStream stream = new MemoryStream(certBytes))
+                        {
+                            client.UploadFile(stream, FormatFTPPath(uploadPath));
+                            succUpload = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Debug("Exception during SFTP upload...");
+                        Logger.Debug($"Upload Exception: {ExceptionHandler.FlattenExceptionMessages(ex, ex.Message)}");
+
+                        if (ApplicationSettings.UseSCP)
+                            Logger.Debug($"SFTP upload failed.  Attempting with SCP protocol...");
+                        else
+                            throw ex;
+                    }
+                    finally
+                    {
+                        client.Disconnect();
+                    }
+                }
+            }
+
+            if (ApplicationSettings.UseSCP & !succUpload)
             {
                 using (ScpClient client = new ScpClient(Connection))
                 {
@@ -123,31 +155,6 @@ namespace PEMStoreSSH.RemoteHandlers
                     }
                 }
             }
-            else
-            {
-                using (SftpClient client = new SftpClient(Connection))
-                {
-                    try
-                    {
-                        client.Connect();
-
-                        using (MemoryStream stream = new MemoryStream(certBytes))
-                        {
-                            client.UploadFile(stream, FormatFTPPath(uploadPath));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Debug("Exception during SFTP upload...");
-                        Logger.Debug($"Upload Exception: {ExceptionHandler.FlattenExceptionMessages(ex, ex.Message)}");
-                        throw ex;
-                    }
-                    finally
-                    {
-                        client.Disconnect();
-                    }
-                }
-            }
 
             if (ApplicationSettings.UseSeparateUploadFilePath)
             {
@@ -160,7 +167,7 @@ namespace PEMStoreSSH.RemoteHandlers
         {
             Logger.Debug($"DownloadCertificateFile: {path}");
 
-            byte[] rtnStore;
+            byte[] rtnStore = new byte[1];
 
             string downloadPath = path;
             string altPathOnly = string.Empty;
@@ -177,7 +184,40 @@ namespace PEMStoreSSH.RemoteHandlers
                 RunCommand($"cp {path} {downloadPath}", null, ApplicationSettings.UseSudo, null);
             }
 
-            if (ApplicationSettings.UseSCP)
+            bool succDownload = false;
+            if (ApplicationSettings.UseSFTP)
+            {
+                using (SftpClient client = new SftpClient(Connection))
+                {
+                    try
+                    {
+                        client.Connect();
+
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            client.DownloadFile(FormatFTPPath(downloadPath), stream);
+                            rtnStore = stream.ToArray();
+                            succDownload = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Debug("Exception during SFTP download...");
+                        Logger.Debug($"Download Exception: {ExceptionHandler.FlattenExceptionMessages(ex, ex.Message)}");
+
+                        if (ApplicationSettings.UseSCP)
+                            Logger.Debug($"SFTP download failed.  Attempting with SCP protocol...");
+                        else
+                            throw ex;
+                    }
+                    finally
+                    {
+                        client.Disconnect();
+                    }
+                }
+            }
+
+            if (ApplicationSettings.UseSCP & !succDownload)
             {
                 using (ScpClient client = new ScpClient(Connection))
                 {
@@ -191,25 +231,11 @@ namespace PEMStoreSSH.RemoteHandlers
                             rtnStore = stream.ToArray();
                         }
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        client.Disconnect();
-                    }
-                }
-            }
-            else
-            {
-                using (SftpClient client = new SftpClient(Connection))
-                {
-                    try
-                    {
-                        client.Connect();
-
-                        using (MemoryStream stream = new MemoryStream())
-                        {
-                            client.DownloadFile(FormatFTPPath(downloadPath), stream);
-                            rtnStore = stream.ToArray();
-                        }
+                        Logger.Debug("Exception during SCP download...");
+                        Logger.Debug($"Download Exception: {ExceptionHandler.FlattenExceptionMessages(ex, ex.Message)}");
+                        throw ex;
                     }
                     finally
                     {

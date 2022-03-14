@@ -4,5 +4,6 @@
   "UseSeparateUploadFilePath": "N",
   "SeparateUploadFilePath": "/path/to/upload/folder/",
   "UseNegotiateAuth": "N",
-  "UseSCP":  "N"
+  "UseSFTP": "N",
+  "UseSCP": "N"
 }
