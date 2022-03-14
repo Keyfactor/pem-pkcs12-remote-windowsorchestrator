@@ -1,4 +1,7 @@
-v1.4.0
+v1.5
+- Add UseSFTP config option so both SFTP and SCP could be attempted to transfer files
+
+v1.4
 - Add support for SCP protocol for transferring files as an alternative to SFTP
 
 v1.3.1
