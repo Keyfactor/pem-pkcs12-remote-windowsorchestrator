@@ -42,7 +42,7 @@ The PEM_PKCS12 Windows Orchestrator has been tested against Keyfactor Windows Or
     * who
     * awk
     * chown
-2. The PEM_PKCS12 AnyAgent makes use of SFTP to transfer files to and from the orchestrated server.  SFTP will not make use of sudo, so all folders containing certificate stores will need to allow SFTP file transfer.  If this is not possible, set the values in the config.json apprpriately to use an alternative upload/download folder that does have SFTP file transfer (See Section 4 regarding the config.json file).
+2. The PEM_PKCS12 AnyAgent makes use of SFTP or SCP to transfer files to and from the orchestrated server.  SFTP and SCP will not make use of sudo, so all folders containing certificate stores will need to allow SFTP/SCP file transfer.  If this is not possible, set the values in the config.json apprpriately to use an alternative upload/download folder that does have SFTP/SCP file transfer permission (See Section 4 regarding the config.json file).
 
 **For Windows orchestrated servers:**
 1. Make sure that WinRM is set up on the orchestrated server and that the WinRM port is part of the certificate store path when setting up your certificate stores (See Section 3a below). 
@@ -179,7 +179,8 @@ The PEM_PKCS12 Orchestrator uses a JSON config file:
 "CreateStoreOnAddIfMissing": "N",  
 "UseSeparateUploadFilePath": "N",  
 "SeparateUploadFilePath": "/path/to/upload/folder/",  
-"UseNegotiateAuth": "N"  ,  
+"UseNegotiateAuth": "N",  
+"UseSFTP": "N",  
 "UseSCP": "N"  
 }
 
@@ -188,7 +189,8 @@ The PEM_PKCS12 Orchestrator uses a JSON config file:
 **UseSeparateUploadFilePath** (Linux only) – When adding a certificate to a PEM or PKCS12 store, the PEM_PKCS12 Orchestrator must upload the certificate being deployed to the server where the certificate store resides. Setting this value to "Y" looks to the next setting, SeparateUploadFilePath, to determine where this file should be uploaded. Set this value to "N" to use the same path where the certificate store being managed resides.  
 **SeparateUploadFilePath** (Linux only) – Only used when UseSeparateUploadFilePath is set to "Y". Set this to the path you wish to use as the location to upload and later remove PEM/PKCS12 certificate store data before being moved to the final destination.  
 **UseNegotiateAuth** (Windows only) – Y/N - Determines if WinRM should use Negotiate (Y) when connecting to the remote server.  
-**UseSCP** (Optional, Linux only) - Y/N - Detemines if SCP (Y) or SFTP (N) should be used in uploading certificate files during Management-Add jobs.  
+**UseSFTP** (Optional, Linux only) - Y/N - See "UseSCP" below.
+**UseSCP** (Optional, Linux only) - Y/N - UseSFTP and UseSCP are used together to determine the appropriate file transfer protocol to use when uploading/downloading files during an orchestrator job.  If both of these files are set to "N" or missing altogether, SFTP will be used.  If either is set to "Y" with the other missing or not set to "Y", the protocol set to "Y" will be used.  If both are set to "Y", SFTP will be attempted first.  If that fails, SCP will be tried.
 
 
 ***
