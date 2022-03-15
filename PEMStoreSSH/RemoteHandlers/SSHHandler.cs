@@ -177,10 +177,6 @@ namespace PEMStoreSSH.RemoteHandlers
             {
                 SplitStorePathFile(path, out altPathOnly, out altFileNameOnly);
                 downloadPath = ApplicationSettings.SeparateUploadFilePath + altFileNameOnly;
-            }
-
-            if (ApplicationSettings.UseSeparateUploadFilePath)
-            {
                 RunCommand($"cp {path} {downloadPath}", null, ApplicationSettings.UseSudo, null);
             }
 
