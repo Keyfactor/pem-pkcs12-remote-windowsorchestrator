@@ -140,7 +140,7 @@ namespace PEMStoreSSH.RemoteHandlers
 
                         using (MemoryStream stream = new MemoryStream(certBytes))
                         {
-                            client.Upload(stream, FormatFTPPath(path));
+                            client.Upload(stream, FormatFTPPath(uploadPath));
                         }
                     }
                     catch (Exception ex)
