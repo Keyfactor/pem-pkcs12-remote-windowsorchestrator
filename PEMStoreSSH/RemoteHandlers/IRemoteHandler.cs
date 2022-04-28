@@ -23,6 +23,6 @@ namespace PEMStoreSSH.RemoteHandlers
 
         void RemoveCertificateFile(string path);
 
-        void CreateEmptyStoreFile(string path);
+        void CreateEmptyStoreFile(string path, string linuxFilePermissions);
     }
 }
