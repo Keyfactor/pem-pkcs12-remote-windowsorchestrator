@@ -52,7 +52,11 @@ namespace PEMStoreSSH
                 throw new PEMException("Mising certificate store Type.  Please ensure store is defined as either PEM or PKCS12.");
             if (hasSeparatePrivateKey && string.IsNullOrEmpty(privateKeyPath))
                 throw new PEMException("Certificate store is set has having a separate private key but no private key path is specified in the store definition.");
-            
+
+            string linuxFilePermissions = properties.linuxFilePermissionsOnStoreCreation == null || string.IsNullOrEmpty(properties.linuxFilePermissionsOnStoreCreation.Value) ?
+                ApplicationSettings.DefaultLinuxPermissionsOnStoreCreation :
+                properties.linuxFilePermissionsOnStoreCreation.Value;
+
             PEMStore pemStore = new PEMStore(config.Store.ClientMachine, config.Server.Username, config.Server.Password, config.Store.StorePath, config.Store.StorePassword, Enum.Parse(typeof(PEMStore.FormatTypeEnum), properties.type.Value, true), 
             privateKeyPath);
 
@@ -70,9 +74,9 @@ namespace PEMStoreSSH
 
                         if (ApplicationSettings.CreateStoreOnAddIfMissing && !storeExists)
                         {
-                            pemStore.CreateEmptyStoreFile(config.Store.StorePath);
+                            pemStore.CreateEmptyStoreFile(config.Store.StorePath, linuxFilePermissions);
                             if (hasSeparatePrivateKey && privateKeyPath != null)
-                                pemStore.CreateEmptyStoreFile(privateKeyPath);
+                                pemStore.CreateEmptyStoreFile(privateKeyPath, linuxFilePermissions);
                         }
 
                         if (!ApplicationSettings.CreateStoreOnAddIfMissing && !storeExists)
@@ -86,7 +90,7 @@ namespace PEMStoreSSH
                         if (!pemStore.DoesStoreExist(config.Store.StorePath))
                             throw new PEMException($"Certificate store {config.Store.StorePath} does not exist.");
 
-                        pemStore.RemoveCertificate(config.Job.Alias);
+                        pemStore.RemoveCertificate(config.Job.Alias, linuxFilePermissions);
 
                         break;
 
@@ -94,9 +98,9 @@ namespace PEMStoreSSH
                         if (pemStore.DoesStoreExist(config.Store.StorePath))
                             throw new PEMException($"Certificate store {config.Store.StorePath} already exists and cannot be created.");
 
-                        pemStore.CreateEmptyStoreFile(config.Store.StorePath);
+                        pemStore.CreateEmptyStoreFile(config.Store.StorePath, linuxFilePermissions);
                         if (hasSeparatePrivateKey && privateKeyPath != null)
-                            pemStore.CreateEmptyStoreFile(privateKeyPath);
+                            pemStore.CreateEmptyStoreFile(privateKeyPath, linuxFilePermissions);
 
                         break;
 
