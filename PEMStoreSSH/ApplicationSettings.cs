@@ -13,6 +13,9 @@ namespace PEMStoreSSH
         public static string SeparateUploadFilePath { get; set; }
         public static bool UseNegotiateAuth { get; set; }
         public static bool UseSCP { get; set; }
+        public static string DefaultLinuxPermissionsOnStoreCreation { get; set; }
+
+        private const string DEFAULT_LINUX_PERMISSION_SETTING = "600";
 
         public static void Initialize(string currLocation)
         {
@@ -34,6 +37,8 @@ namespace PEMStoreSSH
             SeparateUploadFilePath = AddTrailingSlash(jsonContents.SeparateUploadFilePath.Value);
             UseNegotiateAuth = jsonContents.UseNegotiateAuth.Value.Equals("Y", System.StringComparison.OrdinalIgnoreCase);
             UseSCP = jsonContents.UseSCP == null || !jsonContents.UseSCP.Value.Equals("Y", System.StringComparison.OrdinalIgnoreCase) ? false : true;
+            DefaultLinuxPermissionsOnStoreCreation = jsonContents.DefaultLinuxPermissionsOnStoreCreation == null ? DEFAULT_LINUX_PERMISSION_SETTING : jsonContents.DefaultLinuxPermissionsOnStoreCreation.Value;
+
         }
 
         private static string AddTrailingSlash(string path)
