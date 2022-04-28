@@ -64,7 +64,8 @@ In Keyfactor Command create a new Certificate Store Type similar to the one belo
 - **Private Keys** – Optional (a certificate in a PEM/PKCS12 Keystore may or may not contain a private key)
 - **PFX Password Style** – Select Custom.
 - **Job Types** – Discovery, Inventory, Add, and Remove are the 3 job types implemented by this Orchestrator
-- **Parameters** – Five custom parameters are used for this store type. They are:
+- **Parameters** – Five custom parameters are used for this store type. They are:  
+
   - **Type (Name MUST be "type"):**
 
 ![](Images/Image2.png)
