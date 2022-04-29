@@ -1,10 +1,19 @@
 # Remote PEM / PKCS12
-## windows-orchestrator
 
 The remote PEM / PKCS12 Orchestrator allows for the remote management of PEM and PKCS12 based certificate stores. Discovery, Inventory, and Management functions are supported. The orchestrator performs operations by issuing remote commands over SSH to Linux based systems and via WinRM to Windows based systems.
 
-<!-- add integration specific information below -->
-*** 
+#### Integration status: Pilot - Ready for use in test environments. Not for use in production.
+
+## About the Keyfactor Windows Orchestrator AnyAgent
+
+This repository contains a Windows Orchestrator AnyAgent, which is a plugin to the Keyfactor Windows Orchestrator. Within the Keyfactor Platform, Orchestrators are used to manage “certificate stores” &mdash; collections of certificates and roots of trust that are found within and used by various applications.
+
+The Windows Orchestrator is part of the Keyfactor software distribution and is available via the Keyfactor customer portal. For general instructions on installing AnyAgents, see the “Keyfactor Command Orchestrator Installation and Configuration Guide” section of the Keyfactor documentation. For configuration details of this specific AnyAgent, see below in this readme.
+
+Note that in Keyfactor Version 9, the Windows Orchestrator have been replaced by the Universal Orchestrator. While this AnyAgent continues to work with the Windows Orchestrator, and the Windows Orchestrator is supported alongside the Universal Orchestrator talking to Keyfactor version 9, AnyAgent plugins cannot be used with the Universal Orchestrator.
+
+---
+
 
 ## Use Cases
 
@@ -202,3 +211,4 @@ The PEM_PKCS12 Orchestrator uses a JSON config file:
 
 ### License
 [Apache](https://apache.org/licenses/LICENSE-2.0)
+
