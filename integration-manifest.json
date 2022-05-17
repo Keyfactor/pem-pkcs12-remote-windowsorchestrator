@@ -2,7 +2,7 @@
   "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
   "integration_type": "windows-orchestrator",
   "name": "Remote PEM / PKCS12",
-  "status": "pilot",
+  "status": "production",
   "link_github": true,
   "description": "The remote PEM / PKCS12 Orchestrator allows for the remote management of PEM and PKCS12 based certificate stores. Discovery, Inventory, and Management functions are supported. The orchestrator performs operations by issuing remote commands over SSH to Linux based systems and via WinRM to Windows based systems."
 }
