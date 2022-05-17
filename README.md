@@ -2,7 +2,7 @@
 
 The remote PEM / PKCS12 Orchestrator allows for the remote management of PEM and PKCS12 based certificate stores. Discovery, Inventory, and Management functions are supported. The orchestrator performs operations by issuing remote commands over SSH to Linux based systems and via WinRM to Windows based systems.
 
-#### Integration status: Pilot - Ready for use in test environments. Not for use in production.
+#### Integration status: Production - Ready for use in production environments.
 
 ## About the Keyfactor Windows Orchestrator AnyAgent
 
